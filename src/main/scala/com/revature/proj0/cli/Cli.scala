@@ -24,9 +24,9 @@ class Cli {
                     println("T: Title")
                     println("D: Developer")
                     println("P: Publisher")
-                    println("E: ESRB rating")
+                    println("E: ESRB Rating")
                     println("C: Console/Platform")
-                    println("R: Release date")
+                    println("R: Release Date")
 
                     var continueGamesLoop = false
                     var orderBy = "title"
@@ -55,16 +55,16 @@ class Cli {
                     //val rs = dao.getGames(orderBy)
                     val conn = ConnectionUtil.getConnection(db, user, pass)
 
-                    val stmt = conn.prepareStatement("select g.title, g.developer, g.publisher, g.rating, gpr.platform_name_fk, gpr.release_date " +
-                                                            "from games g left join games_platforms_releases gpr on g.title = gpr.game_title_fk " +
-                                                            s"order by ${orderBy};")
+                    val stmt = conn.prepareStatement("SELECT g.title, g.developer, g.publisher, g.rating, gpr.platform_name_fk, gpr.release_date " +
+                                                            "FROM games g LEFT JOIN games_platforms_releases gpr ON g.title = gpr.game_title_fk " +
+                                                            s"ORDER BY ${orderBy};")
 
                     stmt.execute()
 
                     val rs = stmt.getResultSet() // dao should return the ResultSet I think
                     
-                    println("\nGames:")
-                    println("\n[Title] - [Developer] - [Publisher] - [ESRB Rating] - [Platform] - [Release Date]")
+                    println("\n-----\nGAMES\n-----")
+                    println("\n[Title] - [Developer] - [Publisher] - [ESRB Rating] - [Platform] - [Release Date]\n")
                     while(rs.next()) {
                         println(s"${rs.getString("title")} - ${rs.getString("developer")} - ${rs.getString("publisher")} - " +
                                 s"${rs.getString("rating")} - ${rs.getString("platform_name_fk")} - ${rs.getString("release_date")}")
@@ -74,16 +74,36 @@ class Cli {
                 }
                 
                 case commandArgPattern(cmd, arg) if cmd.equalsIgnoreCase("c") => {
-                    println("testing db connection...")
+                    println("\nWhat would you like to sort by?")
+                    println("N: Name")
+                    println("R: Release Date")
+
+                    var continuePlatformsLoop = false
+                    var orderBy = "name"
+                    do {
+                        input = StdIn.readLine()
+                        continuePlatformsLoop = false
+
+                        input.toLowerCase match {
+                            case "n" => orderBy = "name"
+                            case "r" => orderBy = "release_date"
+                            case _ => {
+                                println("INVALID OPTION")
+                                continuePlatformsLoop = true
+                            }
+                        }
+
+                    } while (continuePlatformsLoop)
+                    
+                    
                     val conn = ConnectionUtil.getConnection(db, user, pass)
-                    val stmt = conn.prepareStatement("""SELECT * FROM information_schema.tables
-                                                        WHERE table_schema = 'public';""")
+                    val stmt = conn.prepareStatement(s"SELECT * FROM platforms ORDER BY ${orderBy};")
                     stmt.execute()
 
                     val rs = stmt.getResultSet()
-                    println("\nDatabase Tables:")
+                    println("\n---------\nPLATFORMS\n---------")
                     while(rs.next()) {
-                        println(rs.getString("table_name"))
+                        println(s"${rs.getString("name")} - ${rs.getString("release_date")}")
                     }
 
                     conn.close
@@ -101,7 +121,7 @@ class Cli {
     }
 
     def printWelcome(): Unit = {
-        println("Video Game Database")
+        println("\nVIDEO GAME DATABASE")
     }
 
     // TODO: make sure all menu options appear here
