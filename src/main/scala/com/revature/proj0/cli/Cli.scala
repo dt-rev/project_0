@@ -91,7 +91,7 @@ class Cli {
                     
                     val rs = Dao.getPlatforms(conn, orderBy)
                     println("\n---------\nPLATFORMS\n---------")
-                    println("\n[Platform]                  [Release Date]\n")
+                    println("\n[Platform]                [Release Date]\n")
                     while(rs.next()) {
                         println(f"${rs.getString("name")}%-30s ${rs.getString("release_date")}")
                     }
