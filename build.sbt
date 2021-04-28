@@ -28,6 +28,8 @@ version := "1.0"
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.19"
+libraryDependencies += "com.lihaoyi" %% "upickle" % "0.9.5"
+libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.7.1"
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies

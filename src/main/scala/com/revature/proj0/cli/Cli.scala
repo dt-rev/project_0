@@ -311,7 +311,73 @@ class Cli {
                 }
 
                 case commandArgPattern(cmd,arg) if cmd.equalsIgnoreCase("d") => {
-                    println("TODO: delete from the database")
+                    println("WHAT WILL YOU DELETE?")
+                    println("[G] A game")
+                    println("[C] A console/platform")
+                    println("[R] A game release")
+
+                    val conn = ConnectionUtil.getConnection(db, user, pass)
+                    var continueDeleteLoop = false
+                    breakable {
+                        do {
+                            input = StdIn.readLine()
+                            continueDeleteLoop = false
+
+                            input.toLowerCase match {
+                                case "g" => {
+                                    println("ENTER GAME TO BE DELETED:")
+                                    val title = StdIn.readLine()
+
+                                    if(!Dao.checkExists(conn, "games", "title", title)) {
+                                        println("\nThere is no game by that title in the database")
+                                        break
+                                    }
+
+                                    Dao.deleteGame(conn, title)
+                                }
+                                
+                                case "c" => {
+                                    println("ENTER PLATFORM TO BE DELETED:")
+                                    val name = StdIn.readLine()
+
+                                    if(!Dao.checkExists(conn, "platforms", "name", name)) {
+                                        println("\nThere is no platform by that name in the database")
+                                        break
+                                    }
+
+                                    Dao.deletePlatform(conn, name)
+                                }
+                                
+                                case "r" => {
+                                    println("ENTER GAME WITH RELEASE TO BE DELETED:")
+                                    val title = StdIn.readLine()
+
+                                    if(!Dao.checkExists(conn, "games", "title", title)) {
+                                        println("\nThere is no game by that title in the database")
+                                        break
+                                    }
+
+                                    println("ENTER PLATFORM WITH RELEASE TO BE DELETED:")
+                                    val name = StdIn.readLine()
+
+                                    if(!Dao.checkExists(conn, "platforms", "name", name)) {
+                                        println("\nThere is no platform by that name in the database")
+                                        break
+                                    }
+
+                                    Dao.deleteRelease(conn, title, name)
+                                    
+                                }
+                                
+                                case _ => {
+                                    println("INVALID OPTION")
+                                    continueDeleteLoop = true
+                                }
+                            }
+
+                        } while (continueDeleteLoop)
+                    }
+                    conn.close()
                 }
 
                 case commandArgPattern(cmd, arg) if cmd.equalsIgnoreCase("q") => {
@@ -329,7 +395,6 @@ class Cli {
         println("\nVIDEO GAME DATABASE")
     }
 
-    // TODO: make sure all menu options appear here
     def printMenuOptions(): Unit = {
         List(
             "\n----\nMENU\n----",

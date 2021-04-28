@@ -1,0 +1,50 @@
+[
+    {
+        "title": "Knack",
+        "developer": "Japan Studio",
+        "publisher": "Sony",
+        "rating": "E10+"
+    },
+    {
+        "title": "Knack II",
+        "developer": "Japan Studio",
+        "publisher": "Sony",
+        "rating": "E10+"
+    },
+    {
+        "title": "Halo MCC",
+        "developer": "343 Industries",
+        "publisher": "Xbox Game Studios",
+        "rating": "M"
+    },
+    {
+        "title": "Sid Meier's Civilization V",
+        "developer": "Firaxis Games",
+        "publisher": "2K",
+        "rating": "E10+"
+    },
+    {
+        "title": "Dark Souls III",
+        "developer": "FromSoftware",
+        "publisher": "FromSoftware",
+        "rating": "M"
+    },
+    {
+        "title": "Destiny",
+        "developer": "Bungie",
+        "publisher": "Activision",
+        "rating": "T"
+    },
+    {
+        "title": "Persona 5 Royal",
+        "developer": "Atlus",
+        "publisher": "Sega",
+        "rating": "M"
+    },
+    {
+        "title": "Risk of Rain 2",
+        "developer": "Hopoo Games",
+        "publisher": "Gearbox Publishing",
+        "rating": "T"
+    }
+]
