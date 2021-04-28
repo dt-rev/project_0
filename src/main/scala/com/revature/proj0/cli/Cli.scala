@@ -131,27 +131,7 @@ class Cli {
                                     val pub = StdIn.readLine()
 
                                     //get the ESRB rating
-                                    println("ENTER ESRB RATING")
-                                    println("[E] [E10+] [T] [M] [AO] [RP]:")
-                                    var continueRatingsLoop = false
-                                    var rating = "RP"
-                                    do {
-                                        input = StdIn.readLine()
-                                        continueRatingsLoop = false
-
-                                        input.toLowerCase match {
-                                            case "e" => rating = "E"
-                                            case "e10+" => rating = "E10+"
-                                            case "t" => rating = "T"
-                                            case "m" => rating = "M"
-                                            case "ao" => rating = "AO"
-                                            case "rp" => rating = "RP"
-                                            case _ => {
-                                                println("INVALID OPTION")
-                                                continueRatingsLoop = true
-                                            }
-                                        }
-                                    } while (continueRatingsLoop)
+                                    val rating = getESRB()
 
                                     //get the platform
                                     println("ENTER THE PLATFORM THIS TITLE RELEASED ON:")
@@ -229,6 +209,111 @@ class Cli {
                     } while (continueAddLoop)
                 }
 
+                case commandArgPattern(cmd,arg) if cmd.equalsIgnoreCase("u") => {
+                    println("What would you like to update?")
+                    println("[G] A game")
+                    println("[C] A platform's release date")
+
+                    val conn = ConnectionUtil.getConnection(db, user, pass)
+                    breakable {
+                        var continueUpdateLoop = false
+                        do {
+                            var input = StdIn.readLine()
+                            continueUpdateLoop = false
+
+                            input.toLowerCase match {
+                                case "g" => {
+                                    println("ENTER TITLE OF GAME TO UPDATE:")
+                                    val title = StdIn.readLine()
+
+                                    if (!Dao.checkExists(conn, "games", "title", title)) {
+                                        println("\nThere is no game by that title in the database")
+                                        break
+                                    }
+
+                                    println("WHICH FIELD WILL BE UPDATED?")
+                                    println("[D] Developer")
+                                    println("[P] Publisher")
+                                    println("[E] ESRB rating")
+                                    println("[R] Release Date")
+
+                                    var tableToUpdate = "games"
+                                    var whereColumn = "title"
+                                    var columnToUpdate = ""
+                                    var newValue = ""
+
+                                    var continueUpdateSubLoop = false
+                                    do {
+                                        input = StdIn.readLine()
+                                        continueUpdateSubLoop = false
+                                        input.toLowerCase match {
+                                            case "d" => {
+                                                columnToUpdate = "developer"
+                                                println("ENTER NEW DEVELOPER:")
+                                                newValue = StdIn.readLine()
+                                            }
+                                            case "p" => {
+                                                columnToUpdate = "publisher"
+                                                println("ENTER NEW PUBLISHER:")
+                                                newValue = StdIn.readLine()
+                                            }
+                                            case "e" => {
+                                                columnToUpdate = "rating"
+                                                newValue = getESRB()
+                                            }
+                                            case "r" => {
+                                                columnToUpdate = "release_date"
+                                                tableToUpdate = "games_platforms_releases"
+                                                whereColumn = "game_title_fk"
+                                                newValue = getDateInput()
+                                            }
+                                            case _ => {
+                                                println("INVALID OPTION")
+                                                continueUpdateSubLoop = true
+                                            }
+                                        }
+                                    } while (continueUpdateSubLoop)
+                                    
+                                    input.toLowerCase match {
+                                        case "r" => {
+                                            Dao.updateDate(conn, tableToUpdate, columnToUpdate, whereColumn, title, newValue)
+                                        }
+                                        case _ => {
+                                            Dao.updateText(conn, tableToUpdate, columnToUpdate, whereColumn, title, newValue)
+                                        }
+                                    }
+                                    
+                                }
+                                case "c" => {
+                                    println("ENTER NAME OF PLATFORM TO UPDATE:")
+                                    val name = StdIn.readLine()
+
+                                    if (!Dao.checkExists(conn, "platforms", "name", name)) {
+                                        println("\nThere is no platform by that name in the database")
+                                        break
+                                    }
+
+                                    val columnToUpdate = "release_date"
+                                    val tableToUpdate = "platforms"
+                                    val whereColumn = "name"
+                                    val newValue = getDateInput()
+                                    Dao.updateDate(conn, tableToUpdate, columnToUpdate, whereColumn, name, newValue)
+
+                                }
+                                case _ => {
+                                    println("INVALID OPTION")
+                                    continueUpdateLoop = true
+                                }
+                            }
+                        } while (continueUpdateLoop)
+                    }
+                    conn.close()
+                }
+
+                case commandArgPattern(cmd,arg) if cmd.equalsIgnoreCase("d") => {
+                    println("TODO: delete from the database")
+                }
+
                 case commandArgPattern(cmd, arg) if cmd.equalsIgnoreCase("q") => {
                     continueMenuLoop = false
                 }
@@ -250,7 +335,9 @@ class Cli {
             "\n----\nMENU\n----",
             "[G] List games",
             "[C] List consoles/platforms",
-            "[A] Add to the database",
+            "[A] Add a game, platform, or game release",
+            "[U] Update something in the database",
+            "[D] Delete from the database",
             "[Q] Quit",
             "----\n"
         ).foreach(println)
@@ -293,5 +380,31 @@ class Cli {
         } while (continueDateLoop)
 
         release
+    }
+
+    def getESRB(): String = {
+        println("ENTER ESRB RATING")
+        println("[E] [E10+] [T] [M] [AO] [RP]:")
+        var continueRatingsLoop = false
+        var rating = "RP"
+        do {
+            var input = StdIn.readLine()
+            continueRatingsLoop = false
+
+            input.toLowerCase match {
+                case "e" => rating = "E"
+                case "e10+" => rating = "E10+"
+                case "t" => rating = "T"
+                case "m" => rating = "M"
+                case "ao" => rating = "AO"
+                case "rp" => rating = "RP"
+                case _ => {
+                    println("INVALID OPTION")
+                    continueRatingsLoop = true
+                }
+            }
+        } while (continueRatingsLoop)
+
+        rating
     }
 }
