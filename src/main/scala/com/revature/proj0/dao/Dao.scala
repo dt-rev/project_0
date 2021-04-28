@@ -10,7 +10,7 @@ object Dao {
     def getGames(conn: Connection, orderBy: String): ResultSet = {
         val stmt = conn.prepareStatement("SELECT g.title, g.developer, g.publisher, g.rating, gpr.platform_name_fk, gpr.release_date " +
                                                             "FROM games g LEFT JOIN games_platforms_releases gpr ON g.title = gpr.game_title_fk " +
-                                                            s"ORDER BY $orderBy;")
+                                                            s"ORDER BY $orderBy, title;")
 
         stmt.execute()
 

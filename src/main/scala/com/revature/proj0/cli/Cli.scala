@@ -56,10 +56,11 @@ class Cli {
                     val rs = Dao.getGames(conn, orderBy)
                     
                     println("\n-----\nGAMES\n-----")
-                    println("\n[Title] - [Developer] - [Publisher] - [ESRB Rating] - [Platform] - [Release Date]\n")
+                    println("\n[Title]                                            [Developer]                    " +
+                            "[Publisher]                    [ESRB] [Platform]                  [Release Date]\n")
                     while(rs.next()) {
-                        println(s"${rs.getString("title")} - ${rs.getString("developer")} - ${rs.getString("publisher")} - " +
-                                s"${rs.getString("rating")} - ${rs.getString("platform_name_fk")} - ${rs.getString("release_date")}")
+                        println(f"${rs.getString("title")}%-50s ${rs.getString("developer")}%-30s ${rs.getString("publisher")}%-30s " +
+                                f"${rs.getString("rating")}%-7s ${rs.getString("platform_name_fk")}%-30s ${rs.getString("release_date")}%-10s")
                     }
 
                     conn.close
@@ -90,8 +91,9 @@ class Cli {
                     
                     val rs = Dao.getPlatforms(conn, orderBy)
                     println("\n---------\nPLATFORMS\n---------")
+                    println("\n[Platform]                  [Release Date]\n")
                     while(rs.next()) {
-                        println(s"${rs.getString("name")} - ${rs.getString("release_date")}")
+                        println(f"${rs.getString("name")}%-30s ${rs.getString("release_date")}")
                     }
 
                     conn.close
